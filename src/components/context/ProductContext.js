@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createContext, useContext, useReducer } from "react";
-import { API_PRODUCTS } from "../../helpers/const";
+import { ACTION_PRODUCTS, API_PRODUCTS } from "../../helpers/const";
 
 const productContext = createContext();
 export const useProductContext = () => useContext(productContext);
@@ -13,10 +13,16 @@ const INIT_STATE = {
     price: "",
     picture: "",
   },
+  products: [],
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
+    case ACTION_PRODUCTS.GET_PRODUCTS:
+      return { ...state, products: action.payload.data };
+    case ACTION_PRODUCTS.GET_ONE_PRODUCT:
+      return { ...state, oneProduct: action.payload };
+
     default:
       return state;
   }
@@ -33,9 +39,36 @@ const ProductContext = ({ children }) => {
     }
   }
 
+  async function getProducts() {
+    try {
+      let res = await axios(API_PRODUCTS);
+      dispatch({
+        type: ACTION_PRODUCTS.GET_PRODUCTS,
+        payload: res,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function getOneProduct(id) {
+    try {
+      let { data } = await axios(`${API_PRODUCTS}/${id}`);
+      dispatch({
+        type: ACTION_PRODUCTS.GET_ONE_PRODUCT,
+        payload: data,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const values = {
     createProduct,
+    getProducts,
+    getOneProduct,
     oneProduct: state.oneProduct,
+    products: state.products,
   };
 
   return (
