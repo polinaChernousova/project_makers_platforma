@@ -8,8 +8,10 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useProductContext } from "../../context/ProductContext.js";
 
 const ProductCard = ({ item }) => {
+  const { deleteProduct } = useProductContext();
   const navigate = useNavigate();
   return (
     <>
@@ -47,6 +49,22 @@ const ProductCard = ({ item }) => {
           </Typography>
         </CardContent>
         <CardActions>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            onClick={() => navigate(`/edit/${item.id}`)}
+          >
+            Edit
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            onClick={() => deleteProduct(item.id)}
+          >
+            delete
+          </Button>
           <Button
             variant="contained"
             size="small"

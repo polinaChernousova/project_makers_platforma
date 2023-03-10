@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createContext, useContext, useReducer } from "react";
-import { ACTION_PRODUCTS, API_PRODUCTS } from "../../helpers/const";
+import { ACTION_PRODUCTS, API_PRODUCTS } from "../helpers/const";
 
 const productContext = createContext();
 export const useProductContext = () => useContext(productContext);
@@ -22,7 +22,6 @@ const reducer = (state, action) => {
       return { ...state, products: action.payload.data };
     case ACTION_PRODUCTS.GET_ONE_PRODUCT:
       return { ...state, oneProduct: action.payload };
-
     default:
       return state;
   }
@@ -63,12 +62,33 @@ const ProductContext = ({ children }) => {
     }
   }
 
+  async function editProduct(newProduct) {
+    try {
+      await axios.patch(`${API_PRODUCTS}/${newProduct.id}`, newProduct);
+      getProducts();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function deleteProduct(id) {
+    try {
+      await axios.delete(`${API_PRODUCTS}/${id}`);
+      getProducts();
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const values = {
     createProduct,
     getProducts,
     getOneProduct,
+    editProduct,
+    deleteProduct,
     oneProduct: state.oneProduct,
     products: state.products,
+    productToEdit: state.productToEdit,
   };
 
   return (

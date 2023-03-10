@@ -1,5 +1,5 @@
-import ProductContext from "./components/context/ProductContext";
 import Header from "./components/Navbar/Header";
+import ProductContext from "./context/ProductContext";
 import MyRoutes from "./MyRoutes";
 
 function App() {

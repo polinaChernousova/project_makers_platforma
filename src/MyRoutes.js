@@ -1,9 +1,9 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
 import AdminPage from "./components/pages/AdminPage";
-import DetailsPage from "./components/pages/DetailsPage";
-import HomePage from "./components/pages/HomePage";
 import EditProduct from "./components/product/EditProduct";
+import HomePage from "./pages/HomePage";
+import DetailsPage from "./pages/DetailsPage";
 
 const PUBLIC_ROUTES = [
   {

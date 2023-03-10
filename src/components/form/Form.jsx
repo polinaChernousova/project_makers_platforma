@@ -1,27 +1,43 @@
 import { Button, FormControl, TextField } from "@mui/material";
-import React, { useState } from "react";
-import { useProductContext } from "../context/ProductContext";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useProductContext } from "../../context/ProductContext";
 
 const Form = ({ isEdit }) => {
-  const { createProduct, oneProduct } = useProductContext();
+  const { createProduct, oneProduct, editProduct } = useProductContext();
 
+  // state add
   const [product, setProduct] = useState(oneProduct);
+  // state edit
+  const [editedProduct, setEditedProduct] = useState([]);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isEdit) {
+      setEditedProduct(oneProduct);
+    }
+  }, [oneProduct]);
 
   function handleInp(e) {
     let obj = null;
     if (e.target.name === "price") {
       obj = {
         ...product,
+        ...editedProduct,
         [e.target.name]: Number(e.target.value),
       };
     } else {
       obj = {
         ...product,
+        ...editedProduct,
         [e.target.name]: e.target.value,
       };
     }
     if (!isEdit) {
       setProduct(obj);
+    } else {
+      setEditedProduct(obj);
     }
   }
 
@@ -36,6 +52,17 @@ const Form = ({ isEdit }) => {
     });
   }
 
+  function handleSaveEditedProduct() {
+    for (let key in editedProduct) {
+      if (!editedProduct[key]) {
+        alert("empty inputs");
+        return;
+      }
+    }
+    editProduct(editedProduct);
+    navigate("/");
+  }
+
   return (
     <FormControl
       sx={{ gap: "20px", width: "100%", margin: "50px auto" }}
@@ -46,7 +73,7 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="title"
         fullWidth
-        value={product.title}
+        value={editedProduct.title || ""}
         onChange={handleInp}
       />
       <TextField
@@ -54,7 +81,7 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="description"
         fullWidth
-        value={product.description}
+        value={editedProduct.description || ""}
         onChange={handleInp}
       />
       <TextField
@@ -62,7 +89,7 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="category"
         fullWidth
-        value={product.category}
+        value={editedProduct.category || ""}
         onChange={handleInp}
       />
       <TextField
@@ -70,7 +97,7 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="price"
         fullWidth
-        value={product.price}
+        value={editedProduct.price || ""}
         onChange={handleInp}
       />
       <TextField
@@ -78,7 +105,7 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="picture"
         fullWidth
-        value={product.picture}
+        value={editedProduct.picture || ""}
         onChange={handleInp}
       />
       {isEdit ? (
@@ -91,6 +118,7 @@ const Form = ({ isEdit }) => {
           variant="outlined"
           fullWidth
           size="large"
+          onClick={() => handleSaveEditedProduct(editedProduct)}
         >
           Save changes
         </Button>
