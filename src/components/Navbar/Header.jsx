@@ -14,8 +14,14 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import { Link, useNavigate } from "react-router-dom";
+import LocalMallIcon from "@mui/icons-material/LocalMall";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import AdminPanel from "../admin/AdminPanel";
+import { useProductContext } from "../../context/ProductContext";
+import { Avatar, Badge, Tooltip } from "@mui/material";
+import { useAuthContext } from "../../context/AuthContext";
+import { useCartContext } from "../../context/CartContext";
+import { ADMIN_USERS } from "../../helpers/const";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -73,6 +79,26 @@ export default function Header() {
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
+  const { getProducts } = useProductContext();
+
+  const { user, logOut } = useAuthContext();
+
+  const { cart } = useCartContext();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [search, setSearch] = React.useState(searchParams.get("q") || "");
+
+  // живой поиск
+  React.useEffect(() => {
+    setSearchParams({
+      q: search,
+    });
+  }, [search]);
+
+  React.useEffect(() => {
+    getProducts();
+  }, [searchParams]);
+
   //   navigate
 
   const navigate = useNavigate();
@@ -93,6 +119,11 @@ export default function Header() {
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+
+  function handleLogOut() {
+    handleMenuClose();
+    logOut();
+  }
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -117,7 +148,7 @@ export default function Header() {
       <Link to="/login">
         <MenuItem onClick={handleMenuClose}>Sign In</MenuItem>
       </Link>
-      <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      <MenuItem onClick={handleLogOut}>Logout</MenuItem>
     </Menu>
   );
 
@@ -126,16 +157,21 @@ export default function Header() {
       <ThemeProvider theme={darkTheme}>
         <AppBar position="static">
           <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              sx={{ mr: 2 }}
-              onClick={() => navigate("/admin")}
-            >
-              <AdminPanel />
-            </IconButton>
+            {ADMIN_USERS.map((item, index) =>
+              user && item.email === user.email ? (
+                <IconButton
+                  key={index}
+                  size="large"
+                  edge="start"
+                  color="inherit"
+                  onClick={() => navigate("/admin")}
+                >
+                  <AdminPanel />
+                </IconButton>
+              ) : (
+                ""
+              )
+            )}
             <IconButton
               size="large"
               edge="start"
@@ -151,23 +187,51 @@ export default function Header() {
                 <SearchIcon />
               </SearchIconWrapper>
               <StyledInputBase
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search…"
                 inputProps={{ "aria-label": "search" }}
               />
             </Search>
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: "none", md: "flex" } }}>
-              <IconButton
-                size="large"
-                edge="end"
-                aria-label="account of current user"
-                aria-controls={menuId}
-                aria-haspopup="true"
-                onClick={handleProfileMenuOpen}
-                color="inherit"
-              >
-                <AccountCircle />
+              <IconButton aria-label="cart" onClick={() => navigate("/cart")}>
+                <Badge badgeContent={cart?.products.length} color="secondary">
+                  <LocalMallIcon />
+                </Badge>
               </IconButton>
+
+              {user ? (
+                <>
+                  <Tooltip title={user.email}>
+                    <IconButton
+                      size="large"
+                      edge="end"
+                      aria-label="account of current user"
+                      aria-controls={menuId}
+                      aria-haspopup="true"
+                      onClick={handleProfileMenuOpen}
+                      color="inherit"
+                    >
+                      <Avatar alt={user.displayName} src={user.photoURL} />
+                    </IconButton>
+                  </Tooltip>
+                </>
+              ) : (
+                <>
+                  <IconButton
+                    size="large"
+                    edge="end"
+                    aria-label="account of current user"
+                    aria-controls={menuId}
+                    aria-haspopup="true"
+                    onClick={handleProfileMenuOpen}
+                    color="inherit"
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                </>
+              )}
             </Box>
           </Toolbar>
         </AppBar>

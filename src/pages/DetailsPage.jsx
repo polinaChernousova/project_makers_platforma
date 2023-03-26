@@ -9,14 +9,18 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useCartContext } from "../context/CartContext";
 import { useProductContext } from "../context/ProductContext";
 
 const DetailsPage = () => {
   const { oneProduct, getOneProduct } = useProductContext();
+  const { addProductToCart, checkProductInCart } = useCartContext();
+
   console.log(oneProduct);
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     getOneProduct(id);
@@ -68,9 +72,44 @@ const DetailsPage = () => {
               </CardContent>
             </CardActionArea>
             <CardActions>
-              <Button sx={{ m: 2 }} size="small" variant="contained">
-                Add to Bag
-              </Button>
+              {checkProductInCart(oneProduct.id) ? (
+                <div
+                  style={{
+                    display: "flex",
+                    width: "100%",
+
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Button
+                    sx={{ m: 2 }}
+                    size="small"
+                    variant="contained"
+                    disabled
+                  >
+                    Add to Bag
+                  </Button>
+
+                  <Button
+                    sx={{ m: 2 }}
+                    onClick={() => navigate("/cart")}
+                    size="small"
+                    variant="contained"
+                    color="secondary"
+                  >
+                    Review Bag
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  size="small"
+                  variant="contained"
+                  color="secondary"
+                  onClick={() => addProductToCart(oneProduct)}
+                >
+                  Add to Bag
+                </Button>
+              )}
             </CardActions>
           </Card>
         </Container>

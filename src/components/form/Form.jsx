@@ -3,63 +3,56 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useProductContext } from "../../context/ProductContext";
 
+const init = {
+  title: "",
+  description: "",
+  category: "",
+  price: "",
+  picture: "",
+};
 const Form = ({ isEdit }) => {
   const { createProduct, oneProduct, editProduct } = useProductContext();
 
-  // state add
-  const [product, setProduct] = useState(oneProduct);
-  // state edit
-  const [editedProduct, setEditedProduct] = useState([]);
+  const [product, setProduct] = useState(init);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isEdit) {
-      setEditedProduct(oneProduct);
+    if (isEdit && oneProduct) {
+      setProduct(oneProduct);
     }
   }, [oneProduct]);
 
   function handleInp(e) {
-    let obj = null;
     if (e.target.name === "price") {
-      obj = {
+      let obj = {
         ...product,
-        ...editedProduct,
         [e.target.name]: Number(e.target.value),
       };
-    } else {
-      obj = {
-        ...product,
-        ...editedProduct,
-        [e.target.name]: e.target.value,
-      };
-    }
-    if (!isEdit) {
       setProduct(obj);
     } else {
-      setEditedProduct(obj);
+      let obj = {
+        ...product,
+        [e.target.name]: e.target.value,
+      };
+      setProduct(obj);
     }
   }
 
   function addProduct() {
     createProduct(product);
-    setProduct({
-      title: "",
-      description: "",
-      category: "",
-      price: "",
-      picture: "",
-    });
+    setProduct(init);
   }
 
   function handleSaveEditedProduct() {
-    for (let key in editedProduct) {
-      if (!editedProduct[key]) {
+    for (let key in product) {
+      if (!product[key]) {
         alert("empty inputs");
         return;
       }
     }
-    editProduct(editedProduct);
+    editProduct(product);
+    setProduct(init);
     navigate("/");
   }
 
@@ -73,15 +66,15 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="title"
         fullWidth
-        value={editedProduct.title || ""}
         onChange={handleInp}
+        value={product.title}
       />
       <TextField
         placeholder="enter description"
         variant="outlined"
         name="description"
         fullWidth
-        value={editedProduct.description || ""}
+        value={product.description}
         onChange={handleInp}
       />
       <TextField
@@ -89,7 +82,7 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="category"
         fullWidth
-        value={editedProduct.category || ""}
+        value={product.category}
         onChange={handleInp}
       />
       <TextField
@@ -97,7 +90,7 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="price"
         fullWidth
-        value={editedProduct.price || ""}
+        value={product.price}
         onChange={handleInp}
       />
       <TextField
@@ -105,7 +98,7 @@ const Form = ({ isEdit }) => {
         variant="outlined"
         name="picture"
         fullWidth
-        value={editedProduct.picture || ""}
+        value={product.picture}
         onChange={handleInp}
       />
       {isEdit ? (
@@ -118,7 +111,7 @@ const Form = ({ isEdit }) => {
           variant="outlined"
           fullWidth
           size="large"
-          onClick={() => handleSaveEditedProduct(editedProduct)}
+          onClick={handleSaveEditedProduct}
         >
           Save changes
         </Button>
@@ -132,7 +125,7 @@ const Form = ({ isEdit }) => {
           variant="outlined"
           fullWidth
           size="large"
-          onClick={() => addProduct(product)}
+          onClick={addProduct}
         >
           Add
         </Button>

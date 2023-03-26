@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -8,10 +9,13 @@ import {
 } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../../context/AuthContext.js";
 import { useProductContext } from "../../context/ProductContext.js";
+import { ADMIN_USERS } from "../../helpers/const.js";
 
 const ProductCard = ({ item }) => {
   const { deleteProduct } = useProductContext();
+  const { user } = useAuthContext();
   const navigate = useNavigate();
   return (
     <>
@@ -48,23 +52,46 @@ const ProductCard = ({ item }) => {
             {item.description}
           </Typography>
         </CardContent>
-        <CardActions>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="small"
-            onClick={() => navigate(`/edit/${item.id}`)}
-          >
-            Edit
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            size="small"
-            onClick={() => deleteProduct(item.id)}
-          >
-            delete
-          </Button>
+        <CardActions
+          sx={{
+            width: "100%",
+          }}
+        >
+          {ADMIN_USERS.map((elem, index) =>
+            user && elem.email === user.email ? (
+              <Box
+                key={index}
+                sx={{
+                  display: "flex",
+                  alignItems: "start",
+                  justifyContent: "space-between",
+                  flexDirection: "row",
+                  width: "150px",
+                  // position: "absolute",
+                  mb: 0,
+                }}
+              >
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  size="small"
+                  onClick={() => deleteProduct(item.id)}
+                >
+                  Delete
+                </Button>
+                <Button
+                  variant="contained"
+                  color="secondary"
+                  size="small"
+                  onClick={() => navigate(`/edit/${item.id}`)}
+                >
+                  Edit
+                </Button>
+              </Box>
+            ) : (
+              ""
+            )
+          )}
           <Button
             variant="contained"
             size="small"

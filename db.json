@@ -1,3 +1,52 @@
 {
-  "products": []
+  "products": [
+    {
+      "title": "qwerrty",
+      "description": "qwerty",
+      "category": "iPhone",
+      "price": 2435,
+      "picture": "https://giffiles.alphacoders.com/141/141060.gif",
+      "id": 6
+    },
+    {
+      "title": "atai",
+      "description": "jopa ipsum dolor sit amet consectetur adipisicing elit. Expedita vitae quae nesciunt eligendi necessitatibus.",
+      "category": "iPhone",
+      "price": 1000,
+      "picture": "https://media.tenor.com/ZeXA-unY0qgAAAAC/hitsugi-no-chaika-anime.gif",
+      "id": 3
+    },
+    {
+      "title": "chaika",
+      "description": "korem ipsum dolor sit amet consectetur adipisicing elit. Expedita vitae quae nesciunt eligendi necessitatibus.",
+      "category": "mac",
+      "price": 900,
+      "picture": "https://media.tenor.com/QoGZWuOUHeQAAAAC/chaika-the-coffin-princess.gif",
+      "id": 4
+    },
+    {
+      "title": "cute girl",
+      "description": "mer ipsum dolor sit amet consectetur adipisicing elit. Expedita vitae quae nesciunt eligendi necessitatibus.",
+      "category": "mac",
+      "price": 8000,
+      "picture": "http://i.imgur.com/FpsfETV.jpg",
+      "id": 1
+    },
+    {
+      "title": "",
+      "description": "",
+      "category": "mac",
+      "price": "",
+      "picture": "https://media.tenor.com/ThwbAM51F1oAAAAC/chaika-the-coffin-princess.gif",
+      "id": 5
+    },
+    {
+      "title": "",
+      "description": "",
+      "category": "mac",
+      "price": "",
+      "picture": "https://media.tenor.com/ThwbAM51F1oAAAAC/chaika-the-coffin-princess.gif",
+      "id": 7
+    }
+  ]
 }

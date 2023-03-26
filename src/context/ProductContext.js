@@ -1,25 +1,25 @@
 import axios from "axios";
 import { createContext, useContext, useReducer } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ACTION_PRODUCTS, API_PRODUCTS } from "../helpers/const";
 
 const productContext = createContext();
 export const useProductContext = () => useContext(productContext);
 
 const INIT_STATE = {
-  oneProduct: {
-    title: "",
-    description: "",
-    category: "",
-    price: "",
-    picture: "",
-  },
+  oneProduct: null,
   products: [],
+  productsTotalCount: 0,
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
     case ACTION_PRODUCTS.GET_PRODUCTS:
-      return { ...state, products: action.payload.data };
+      return {
+        ...state,
+        products: action.payload.data,
+        productsTotalCount: action.payload.headers["x-total-count"],
+      };
     case ACTION_PRODUCTS.GET_ONE_PRODUCT:
       return { ...state, oneProduct: action.payload };
     default:
@@ -29,6 +29,11 @@ const reducer = (state, action) => {
 
 const ProductContext = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, INIT_STATE);
+
+  // ! hooks
+  const location = useLocation();
+
+  const navigate = useNavigate();
 
   async function createProduct(newProduct) {
     try {
@@ -40,7 +45,7 @@ const ProductContext = ({ children }) => {
 
   async function getProducts() {
     try {
-      let res = await axios(API_PRODUCTS);
+      let res = await axios(`${API_PRODUCTS}/${window.location.search}`);
       dispatch({
         type: ACTION_PRODUCTS.GET_PRODUCTS,
         payload: res,
@@ -80,15 +85,31 @@ const ProductContext = ({ children }) => {
     }
   }
 
+  // filtration
+  function fetchByParams(query, value) {
+    const paramsFromUrl = new URLSearchParams(location.search);
+
+    if (value === "all") {
+      paramsFromUrl.delete(query);
+    } else {
+      paramsFromUrl.set(query, value);
+    }
+    const url = `${location.pathname}?${paramsFromUrl.toString()}`;
+    console.log(typeof url);
+    navigate(url);
+  }
+
   const values = {
     createProduct,
     getProducts,
     getOneProduct,
     editProduct,
     deleteProduct,
+    fetchByParams,
     oneProduct: state.oneProduct,
     products: state.products,
     productToEdit: state.productToEdit,
+    productsTotalCount: state.productsTotalCount,
   };
 
   return (
